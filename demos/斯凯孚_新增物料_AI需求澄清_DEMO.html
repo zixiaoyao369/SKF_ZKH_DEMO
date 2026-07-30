@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>新增物料 · AI需求澄清 Demo</title>
+  <style>
+    :root{--blue:#1677ff;--blue-dark:#0958d9;--blue-soft:#eaf3ff;--ink:#172b4d;--muted:#75839b;--line:#e7ebf1;--surface:#fff;--wash:#f5f7fa;--green:#1aaa55;--amber:#f59e0b;--shadow:0 22px 60px rgba(20,42,75,.16);--radius:6px;font-family:"PingFang SC","Microsoft YaHei",Arial,sans-serif;color:var(--ink)}
+    *{box-sizing:border-box} body{margin:0;min-width:320px;background:#eef2f6;color:var(--ink);font-size:13px} button,input,select,textarea{font:inherit} button{cursor:pointer}
+    .app{min-height:100vh;padding:18px;display:grid;place-items:center;background:linear-gradient(135deg,#f7f9fc 0%,#edf2f7 100%)}
+    .modal{width:min(1180px,100%);height:min(760px,calc(100vh - 36px));min-height:620px;background:var(--surface);border-radius:9px;box-shadow:var(--shadow);display:flex;flex-direction:column;overflow:hidden;border:1px solid #e2e7ee;position:relative}
+    .modal-head{height:55px;display:flex;align-items:center;justify-content:space-between;padding:0 22px;border-bottom:1px solid var(--line);flex:none}.modal-title{font-weight:600;font-size:16px;letter-spacing:.2px}.head-tools{display:flex;gap:18px;color:#8390a3}.head-tools button{border:0;background:transparent;color:inherit;padding:2px;line-height:1}.head-tools button:hover{color:var(--blue)}
+    .modal-body{flex:1;min-height:0;overflow:auto;padding:14px 20px 22px;background:#fff}.form-grid{border:1px solid #e0e5eb;border-bottom:0;display:grid;grid-template-columns:128px minmax(160px,1fr) 128px minmax(160px,1fr)}
+    .cell{min-height:49px;border-right:1px solid #e0e5eb;border-bottom:1px solid #e0e5eb;display:flex;align-items:center;padding:7px 10px;background:#fff}.cell:nth-child(4n){border-right:0}.label{color:#59677b;background:#fafbfc}.required:before{content:"*";color:#e34d59;margin-right:3px}.control{min-width:0}.control input,.control select,.control textarea{width:100%;height:34px;border:1px solid #d7dee8;border-radius:3px;color:#27384f;background:#fff;padding:0 10px;outline:0;transition:border-color .18s,box-shadow .18s}.control textarea{height:56px;padding-top:8px;resize:vertical}.control input:focus,.control select:focus,.control textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(22,119,255,.11)}.control input[readonly]{background:#f6f7f9;color:#9aa5b4}.control select{appearance:none;background-image:linear-gradient(45deg,transparent 50%,#9da8b6 50%),linear-gradient(135deg,#9da8b6 50%,transparent 50%);background-position:calc(100% - 14px) 14px,calc(100% - 9px) 14px;background-size:5px 5px,5px 5px;background-repeat:no-repeat;padding-right:28px}.hint{font-size:11px;color:#f05a67;margin-top:4px;display:none}.has-error .hint{display:block}.has-error input{border-color:#f05a67;background:#fffafb}
+    .material-block{grid-column:1 / -1;display:grid;grid-template-columns:128px minmax(0,1fr);border-bottom:1px solid #e0e5eb}.material-block>.label{border-right:1px solid #e0e5eb;padding:14px 10px;display:flex;align-items:flex-start}.material-fields{padding:12px;display:grid;grid-template-columns:1.3fr .9fr 1.1fr .9fr minmax(125px,auto);gap:10px;align-items:start}.field-title{height:21px;color:#59677b;display:flex;align-items:center}.field-title .optional{color:#a6afbc;font-size:11px;margin-left:3px}.standard-attrs{grid-column:1/-1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;padding-top:2px;border-top:1px dashed #e4e9f0}.attr-cell{min-width:0}.attr-cell .field-title{font-size:12px}.ai-cta{height:34px;border:1px solid var(--blue);border-radius:4px;color:#fff;background:var(--blue);font-weight:600;padding:0 18px;box-shadow:0 4px 10px rgba(22,119,255,.16);transition:.2s;white-space:nowrap}.ai-cta:hover:not(:disabled){background:var(--blue-dark);transform:translateY(-1px)}.ai-cta:disabled{background:#cbd5e1;border-color:#cbd5e1;box-shadow:none;cursor:not-allowed}.demo-tip{grid-column:1/-1;margin:16px 0 0;padding:10px 12px;border-radius:4px;background:#f8fbff;color:#59708d;border-left:3px solid #91caff;font-size:12px;display:flex;gap:8px;align-items:center}.demo-tip b{color:var(--blue)}
+    .modal-foot{height:64px;flex:none;border-top:1px solid var(--line);display:flex;justify-content:flex-end;align-items:center;gap:10px;padding:0 20px;background:#fff}.btn{height:34px;border-radius:4px;padding:0 20px;border:1px solid #d7dee8;background:#fff;color:#4b5a70}.btn:hover{border-color:var(--blue);color:var(--blue)}.btn.primary{background:var(--blue);border-color:var(--blue);color:#fff}.btn.primary:hover{background:var(--blue-dark)}
+    .scrim{position:absolute;inset:0;background:rgba(16,31,54,.18);opacity:0;pointer-events:none;transition:opacity .25s;z-index:4}.scrim.open{opacity:1;pointer-events:auto}.ai-panel{position:absolute;z-index:5;right:0;top:0;height:100%;width:min(480px,100%);background:#fff;box-shadow:-12px 0 34px rgba(29,50,82,.18);transform:translateX(102%);transition:transform .3s cubic-bezier(.22,.61,.36,1);display:flex;flex-direction:column}.ai-panel.open{transform:translateX(0)}.ai-head{height:70px;display:flex;align-items:center;justify-content:space-between;padding:0 22px;border-bottom:1px solid var(--line);background:#fbfcfe}.ai-head h2{margin:0;font-size:18px}.ai-head p{margin:5px 0 0;color:var(--muted);font-size:12px}.ai-close{border:0;background:transparent;color:#78869a;font-size:23px;line-height:1}.ai-content{overflow:auto;padding:18px 22px 28px;flex:1}.status-line{display:flex;align-items:center;gap:8px;color:var(--blue);font-weight:600;font-size:12px;margin-bottom:14px}.status-dot{width:7px;height:7px;background:var(--blue);border-radius:50%;box-shadow:0 0 0 5px #e9f2ff}.status-dot.done{background:var(--green);box-shadow:0 0 0 5px #e8f8ee}.status-dot.error{background:#f05a67;box-shadow:0 0 0 5px #fff0f1}.spinner{width:13px;height:13px;border:2px solid #cfe2ff;border-top-color:var(--blue);border-radius:50%;animation:spin .8s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
+    .input-summary{border:1px solid #e3e9f1;border-radius:6px;background:#fafcff;padding:13px;margin-bottom:18px}.summary-title{font-size:12px;color:#718096;margin-bottom:10px}.summary-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}.summary-item{padding:8px 9px;background:#fff;border:1px solid #edf0f4;border-radius:4px;min-width:0}.summary-item.full{grid-column:1/-1}.summary-item span{display:block;color:#8a96a6;font-size:11px;margin-bottom:3px}.summary-item b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500;color:#243b5a}
+    .result-card{border:1px solid #e2e8f0;border-radius:6px;margin-bottom:14px;overflow:hidden}.result-head{height:42px;display:flex;align-items:center;gap:8px;padding:0 13px;background:#f8fafc;border-bottom:1px solid #e8edf3;font-weight:600}.result-head .ai-mark{width:23px;height:23px;display:grid;place-items:center;background:var(--blue);color:#fff;border-radius:4px;font-size:11px;font-weight:700}.result-body{padding:15px}.crumbs{display:flex;flex-wrap:wrap;gap:6px;align-items:center;color:#718096}.crumb{padding:5px 9px;background:#f2f6fb;border-radius:3px;color:#526983}.crumb.current{background:#e8f1ff;color:#125dca;font-weight:600}.arrow{color:#a3afbd}.result-table{width:100%;border-collapse:collapse;font-size:12px}.result-table td{padding:10px 7px;border-bottom:1px solid #edf0f3}.result-table tr:last-child td{border-bottom:0}.result-table td:first-child{color:#8490a1;width:34%}.result-table td:last-child{color:#253d5c;font-weight:600}.editable{border-bottom:1px dashed #91bffc;color:var(--blue)!important;cursor:text}.disclaimer{padding:10px 12px;background:#fff8e8;color:#9a6a11;border:1px solid #ffe6a4;border-radius:4px;font-size:11px;line-height:1.6}.panel-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}.retry{border:1px solid #bcd5ff;background:#f5f9ff;color:var(--blue);height:32px;border-radius:4px;padding:0 14px}.apply{border:1px solid var(--blue);background:var(--blue);color:#fff;height:32px;border-radius:4px;padding:0 17px}.apply:hover{background:var(--blue-dark)}.loading-state{padding:28px 0;text-align:center;color:#8090a4}.loading-state .big-spinner{width:26px;height:26px;border:3px solid #dbeaff;border-top-color:var(--blue);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 12px}.hidden{display:none!important}
+    .ai-panel{width:480px}.ai-head>div{min-width:0}.ai-head p{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ai-close{flex:none}.result-table{table-layout:fixed}.result-table td{overflow-wrap:anywhere}
+    .field-applied{animation:fieldApplied 1.8s ease both}@keyframes fieldApplied{0%{background:#e8f4ff;box-shadow:0 0 0 3px rgba(22,119,255,.22)}65%{background:#f4fbff;box-shadow:0 0 0 2px rgba(22,119,255,.08)}100%{background:#fff;box-shadow:none}}
+    .toast{position:fixed;left:50%;bottom:28px;transform:translate(-50%,18px);background:#243b5a;color:#fff;padding:10px 18px;border-radius:5px;box-shadow:0 7px 22px rgba(21,38,63,.22);opacity:0;pointer-events:none;transition:.25s;z-index:20}.toast.show{opacity:1;transform:translate(-50%,0)}
+    @media (max-width:760px){body{font-size:12px}.app{padding:0;display:block;background:#f5f7fa}.modal{width:100%;height:100vh;min-height:0;border-radius:0;border:0}.modal-head{height:52px;padding:0 16px}.modal-body{padding:12px 12px 18px}.form-grid{display:block;border-bottom:0}.cell{min-height:50px;border-right:0}.cell.label{min-height:30px;border-bottom:0;padding:9px 10px 5px;background:#fbfcfe}.cell.control{border-bottom:1px solid #e0e5eb;padding:5px 10px 11px}.material-block{display:block}.material-block>.label{border-right:0;padding:9px 10px 5px;min-height:30px}.material-fields{padding:5px 10px 13px;display:grid;grid-template-columns:1fr 1fr;gap:9px}.material-fields .material-name,.material-fields .material-model{grid-column:span 2}.material-fields .ai-wrap{grid-column:span 2}.modal-foot{height:60px;padding:0 12px}.ai-panel{position:absolute;top:auto;bottom:0;left:0;right:auto;height:min(86vh,650px);width:calc(100vw - 1px)!important;max-width:calc(100vw - 1px)!important;overflow:hidden;transform:translateY(102%);border-radius:14px 14px 0 0}.ai-panel.open{transform:translateY(0)}.ai-head{height:62px;padding:0 17px}.ai-content{padding:15px 17px 22px}.demo-tip{margin-top:12px}}
+    @media (prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.001ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.001ms!important}}
+  </style>
+</head>
+<body>
+  <main class="app">
+    <section class="modal" aria-label="新增物料表单">
+      <header class="modal-head"><div class="modal-title">新增物料</div><div class="head-tools"><button aria-label="表单设置">☷</button><button aria-label="全屏">⛶</button><button aria-label="关闭窗口">×</button></div></header>
+      <div class="modal-body">
+        <form id="materialForm" novalidate>
+          <div class="form-grid">
+            <div class="cell label">物料编码:</div><div class="cell control"><input value="SKF-WU2026072700000258" readonly aria-label="物料编码" /></div>
+            <div class="cell label required">物料名称:</div><div class="cell control" id="nameField"><input id="materialName" placeholder="请输入" aria-required="true" aria-label="物料名称" /><div class="hint">请输入物料名称</div></div>
+            <div class="material-block">
+              <div class="label required">物料信息</div>
+              <div class="material-fields">
+                <div class="control"><div class="field-title">品牌 <span class="optional">（选填）</span></div><input id="brand" placeholder="请输入品牌" aria-label="品牌" /></div>
+                <div class="control material-model" id="modelField"><div class="field-title required">型号/规格</div><input id="model" placeholder="请输入型号" aria-required="true" aria-label="型号/规格" /><div class="hint">请输入物料型号</div></div>
+                <div class="control"><div class="field-title">品牌替代</div><select id="substitute" aria-label="是否允许品牌替代"><option value="是" selected>是</option><option value="否">否</option></select></div>
+                <div class="ai-wrap"><button class="ai-cta" id="aiButton" type="button" disabled>AI需求澄清</button></div>
+                <div class="standard-attrs" id="standardAttributes">
+                  <div class="attr-cell"><div class="field-title">品名</div><input id="attrProductName" placeholder="AI标准化后填写" aria-label="品名" /></div>
+                  <div class="attr-cell"><div class="field-title">材质</div><input id="attrMaterial" placeholder="AI标准化后填写" aria-label="材质" /></div>
+                  <div class="attr-cell"><div class="field-title">等级</div><input id="attrGrade" placeholder="AI标准化后填写" aria-label="等级" /></div>
+                  <div class="attr-cell"><div class="field-title">表面处理</div><input id="attrFinish" placeholder="AI标准化后填写" aria-label="表面处理" /></div>
+                  <div class="attr-cell"><div class="field-title">标准</div><input id="attrStandard" placeholder="AI标准化后填写" aria-label="标准" /></div>
+                </div>
+              </div>
+            </div>
+            <div class="cell label">需求日期:</div><div class="cell control"><input type="date" value="2026-08-10" aria-label="需求日期" /></div>
+            <div class="cell label required">申请数量:</div><div class="cell control"><input type="number" min="1" value="10" aria-label="申请数量" /></div>
+            <div class="cell label">预估单价:</div><div class="cell control"><input placeholder="请输入" aria-label="预估单价" /></div>
+            <div class="cell label">单位:</div><div class="cell control"><select id="unit" aria-label="单位"><option>请选择</option><option>件</option><option>套</option><option>个</option></select></div>
+            <div class="cell label required">付款成本中心:</div><div class="cell control" style="grid-column:2 / -1"><select aria-label="付款成本中心"><option>请选择</option><option>SKF-华东采购中心</option><option>SKF-设备维护中心</option></select></div>
+            <div class="cell label">项目:</div><div class="cell control"><select aria-label="项目"><option>请选择</option><option>2026年度设备维护</option><option>生产线升级项目</option></select></div>
+            <div class="cell label required">Ariba单位:</div><div class="cell control"><select aria-label="Ariba单位"><option>请选择</option><option>SKF中国采购</option><option>SKF上海工厂</option></select></div>
+            <div class="cell label">备注:</div><div class="cell control" style="grid-column:2 / -1"><textarea placeholder="请输入" aria-label="备注"></textarea></div>
+          </div>
+          <div class="demo-tip"><b>AI Demo</b><span>AI 结果为本地模拟建议，提交前可人工检查与修改。</span></div>
+        </form>
+      </div>
+      <footer class="modal-foot"><button class="btn" type="button" id="closeBtn">关闭</button><button class="btn primary" type="button" id="submitBtn">确定</button></footer>
+      <div class="scrim" id="scrim"></div>
+      <aside class="ai-panel" id="aiPanel" aria-label="AI需求澄清结果" aria-hidden="true">
+        <header class="ai-head"><div><h2>AI需求澄清</h2><p>基于物料描述生成可采购的标准信息</p></div><button class="ai-close" id="aiClose" aria-label="关闭 AI 浮框">×</button></header>
+        <div class="ai-content">
+          <div class="status-line" id="statusLine"><span class="status-dot"></span><span id="statusText">等待分析</span></div>
+          <div class="input-summary"><div class="summary-title">本次识别输入</div><div class="summary-row"><div class="summary-item full"><span>物料名称</span><b id="summaryName">—</b></div><div class="summary-item"><span>品牌</span><b id="summaryBrand">—</b></div><div class="summary-item"><span>型号</span><b id="summaryModel">—</b></div><div class="summary-item full"><span>是否允许品牌替代</span><b id="summarySubstitute">是</b></div></div></div>
+          <div id="loadingView" class="loading-state"><div class="big-spinner"></div><div>正在澄清物料类目与关键属性…</div></div>
+          <div id="resultView" class="hidden">
+            <section class="result-card"><div class="result-head"><span class="ai-mark">AI</span><span>AI澄清类目</span></div><div class="result-body"><div class="crumbs"><span class="crumb">紧固件</span><span class="arrow">›</span><span class="crumb">螺栓</span><span class="arrow">›</span><span class="crumb current">六角螺栓</span></div></div></section>
+            <section class="result-card"><div class="result-head"><span class="ai-mark">AI</span><span>AI标准化结果</span></div><div class="result-body"><table class="result-table"><tbody><tr><td>品名</td><td id="resultName" contenteditable="true" class="editable">六角螺栓</td></tr><tr><td>规格</td><td id="resultSpec" contenteditable="true" class="editable">M8×50</td></tr><tr><td>品牌</td><td id="resultBrand" contenteditable="true" class="editable"></td></tr><tr><td>品牌替代</td><td id="resultSubstitute" contenteditable="true" class="editable">是</td></tr><tr><td>材质</td><td id="resultMaterial" contenteditable="true" class="editable">不锈钢304</td></tr><tr><td>等级</td><td id="resultGrade" contenteditable="true" class="editable">A2-70</td></tr><tr><td>表面处理</td><td id="resultFinish" contenteditable="true" class="editable">本色</td></tr><tr><td>标准</td><td id="resultStandard" contenteditable="true" class="editable">GB5783</td></tr></tbody></table></div></section>
+            <div class="disclaimer">建议结果仅供参考，提交前请结合采购规范人工确认；本页面不连接真实 AI 服务。</div>
+            <div class="panel-actions"><button class="retry" id="retryBtn" type="button">重新澄清</button><button class="apply" id="applyBtn" type="button">应用标准化结果</button></div>
+          </div>
+        </div>
+      </aside>
+    </section>
+  </main>
+  <div class="toast" id="toast" role="status"></div>
+  <script>
+    const $=s=>document.querySelector(s); const name=$('#materialName'), brand=$('#brand'), model=$('#model'), substitute=$('#substitute'), aiButton=$('#aiButton'), panel=$('#aiPanel'), scrim=$('#scrim'), toast=$('#toast');
+    let demoTimer; let isDemo=true;
+    function syncName(value){ name.value=value; validate(); }
+    name.addEventListener('input',validate); model.addEventListener('input',validate); brand.addEventListener('input',validate); substitute.addEventListener('change',validate);
+    function validate(){ const ok=name.value.trim()&&model.value.trim(); aiButton.disabled=!ok; $('#nameField').classList.toggle('has-error',!name.value.trim()); $('#modelField').classList.toggle('has-error',!model.value.trim()); return !!ok; }
+    function openAI(){ if(!validate()){ showToast('请先填写物料名称和型号'); return; } $('#summaryName').textContent=name.value.trim(); $('#summaryBrand').textContent=brand.value.trim()||'未填写'; $('#summaryModel').textContent=model.value.trim(); $('#summarySubstitute').textContent=substitute.value; panel.classList.add('open');scrim.classList.add('open');panel.setAttribute('aria-hidden','false'); $('#loadingView').classList.remove('hidden');$('#resultView').classList.add('hidden');$('#statusText').textContent='正在分析';$('#statusLine').querySelector('.status-dot').className='status-dot'; window.clearTimeout(demoTimer);demoTimer=window.setTimeout(showResults,1200); }
+    function showResults(){ $('#loadingView').classList.add('hidden');$('#resultView').classList.remove('hidden');$('#statusText').textContent='分析完成';$('#statusLine').querySelector('.status-dot').className='status-dot done'; }
+    function resultText(id){ return $(id).textContent.trim(); }
+    function markApplied(element){ element.classList.remove('field-applied'); void element.offsetWidth; element.classList.add('field-applied'); }
+    function applyStandardizedResult(){
+      const standardizedName=resultText('#resultName'), standardizedSpec=resultText('#resultSpec'), standardizedBrand=resultText('#resultBrand'), standardizedSubstitute=resultText('#resultSubstitute');
+      const standardizedMaterial=resultText('#resultMaterial'), standardizedGrade=resultText('#resultGrade'), standardizedFinish=resultText('#resultFinish'), standardizedStandard=resultText('#resultStandard');
+      name.value=standardizedName; model.value=standardizedSpec; brand.value=standardizedBrand;
+      $('#attrProductName').value=standardizedName; $('#attrMaterial').value=standardizedMaterial; $('#attrGrade').value=standardizedGrade; $('#attrFinish').value=standardizedFinish; $('#attrStandard').value=standardizedStandard;
+      [name,model,brand,$('#attrProductName'),$('#attrMaterial'),$('#attrGrade'),$('#attrFinish'),$('#attrStandard')].forEach(markApplied);
+      let invalidSubstitute=false;
+      if(standardizedSubstitute==='是'||standardizedSubstitute==='否'){ substitute.value=standardizedSubstitute; markApplied(substitute); } else if(standardizedSubstitute){ invalidSubstitute=true; }
+      validate(); closeAI(); showToast(invalidSubstitute?'已应用标准化结果，品牌替代请人工确认':'AI标准化结果已应用，可继续检查后提交');
+    }
+    function closeAI(){panel.classList.remove('open');scrim.classList.remove('open');panel.setAttribute('aria-hidden','true');window.clearTimeout(demoTimer)}
+    function showToast(message){toast.textContent=message;toast.classList.add('show');window.clearTimeout(showToast.t);showToast.t=window.setTimeout(()=>toast.classList.remove('show'),2600)}
+    aiButton.addEventListener('click',openAI); $('#aiClose').addEventListener('click',closeAI); scrim.addEventListener('click',closeAI); $('#retryBtn').addEventListener('click',openAI); $('#applyBtn').addEventListener('click',applyStandardizedResult); $('#closeBtn').addEventListener('click',()=>showToast('已关闭新增物料表单')); $('#submitBtn').addEventListener('click',()=>{if(!validate()){showToast('请补充物料名称和型号');return}showToast('物料已保存（Demo 模拟提交）')});
+    function autoplay(){ if(!isDemo)return; isDemo=false; syncName('六角螺栓',name); brand.value=''; model.value='M8'; substitute.value='是'; validate(); setTimeout(()=>openAI(),700); }
+    window.addEventListener('load',()=>setTimeout(autoplay,650));
+  </script>
+</body>
+</html>
