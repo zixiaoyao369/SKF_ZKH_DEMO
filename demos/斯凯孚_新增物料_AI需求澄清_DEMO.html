@@ -7,10 +7,11 @@
   <style>
     :root{--blue:#1677ff;--blue-dark:#0958d9;--blue-soft:#eaf3ff;--ink:#172b4d;--muted:#75839b;--line:#e7ebf1;--surface:#fff;--wash:#f5f7fa;--green:#1aaa55;--amber:#f59e0b;--shadow:0 22px 60px rgba(20,42,75,.16);--radius:6px;font-family:"PingFang SC","Microsoft YaHei",Arial,sans-serif;color:var(--ink)}
     *{box-sizing:border-box} body{margin:0;min-width:320px;background:#eef2f6;color:var(--ink);font-size:13px} button,input,select,textarea{font:inherit} button{cursor:pointer}
-    .app{min-height:100vh;padding:18px;display:grid;place-items:center;background:linear-gradient(135deg,#f7f9fc 0%,#edf2f7 100%)}
+    .app{min-height:100vh;padding:18px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:14px;background:linear-gradient(135deg,#f7f9fc 0%,#edf2f7 100%)}
     .modal{width:min(1180px,100%);height:min(760px,calc(100vh - 36px));min-height:620px;background:var(--surface);border-radius:9px;box-shadow:var(--shadow);display:flex;flex-direction:column;overflow:hidden;border:1px solid #e2e7ee;position:relative}
     .modal-head{height:55px;display:flex;align-items:center;justify-content:space-between;padding:0 22px;border-bottom:1px solid var(--line);flex:none}.modal-title{font-weight:600;font-size:16px;letter-spacing:.2px}.head-tools{display:flex;align-items:center;gap:10px;color:#8390a3}.head-tools button{border:0;background:transparent;color:inherit;padding:2px;line-height:1}.head-tools button:hover{color:var(--blue)}
-    .toggle-group{display:flex;align-items:center;border:1px solid #d7dee8;border-radius:4px;overflow:hidden;margin-right:8px}.toggle-group button{height:28px;padding:0 14px;font-size:12px;color:#4b5a70;background:#fff;border:0;border-right:1px solid #e7ebf1;transition:.18s}.toggle-group button:last-child{border-right:0}.toggle-group button.active{background:var(--blue);color:#fff;font-weight:600}.toggle-group button:hover:not(.active){background:#f5f7fa;color:var(--blue)}
+    .top-toggle{flex:none;display:flex;justify-content:center;align-items:center;width:100%}
+    .toggle-group{display:flex;align-items:center;border:1px solid #d7dee8;border-radius:4px;overflow:hidden;background:#fff;box-shadow:0 2px 8px rgba(20,42,75,.06)}.toggle-group button{height:28px;padding:0 14px;font-size:12px;color:#4b5a70;background:#fff;border:0;border-right:1px solid #e7ebf1;transition:.18s}.toggle-group button:last-child{border-right:0}.toggle-group button.active{background:var(--blue);color:#fff;font-weight:600}.toggle-group button:hover:not(.active){background:#f5f7fa;color:var(--blue)}
     .form-grid{border:1px solid #e0e5eb;border-bottom:0;display:grid;grid-template-columns:128px minmax(160px,1fr) 128px minmax(160px,1fr)}
     .cell{min-height:49px;border-right:1px solid #e0e5eb;border-bottom:1px solid #e0e5eb;display:flex;align-items:center;padding:7px 10px;background:#fff}.cell:nth-child(4n){border-right:0}.label{color:#59677b;background:#fafbfc}.required:before{content:"*";color:#e34d59;margin-right:3px}.control{min-width:0}.control input,.control select,.control textarea{width:100%;height:34px;border:1px solid #d7dee8;border-radius:3px;color:#27384f;background:#fff;padding:0 10px;outline:0;transition:border-color .18s,box-shadow .18s}.control textarea{height:56px;padding-top:8px;resize:vertical}.control input:focus,.control select:focus,.control textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(22,119,255,.11)}.control input[readonly]{background:#f6f7f9;color:#9aa5b4}.control select{appearance:none;background-image:linear-gradient(45deg,transparent 50%,#9da8b6 50%),linear-gradient(135deg,#9da8b6 50%,transparent 50%);background-position:calc(100% - 14px) 14px,calc(100% - 9px) 14px;background-size:5px 5px,5px 5px;background-repeat:no-repeat;padding-right:28px}.hint{font-size:11px;color:#f05a67;margin-top:4px;display:none}.has-error .hint{display:block}.has-error input,.has-error select{border-color:#f05a67;background:#fffafb}
     .material-block{grid-column:1 / -1;display:grid;grid-template-columns:128px minmax(0,1fr);border-bottom:1px solid #e0e5eb}.material-block>.label{border-right:1px solid #e0e5eb;padding:14px 10px;display:flex;align-items:flex-start}
@@ -32,14 +33,16 @@
 </head>
 <body>
   <main class="app">
+    <div class="top-toggle">
+      <div class="toggle-group" role="group" aria-label="优化效果切换">
+        <button type="button" class="active" id="btnBefore" aria-pressed="true">优化前</button>
+        <button type="button" id="btnAfter" aria-pressed="false">优化后</button>
+      </div>
+    </div>
     <section class="modal" aria-label="新增物料表单">
       <header class="modal-head">
         <div class="modal-title">新增物料</div>
         <div class="head-tools">
-          <div class="toggle-group" role="group" aria-label="优化效果切换">
-            <button type="button" class="active" id="btnBefore" aria-pressed="true">优化前</button>
-            <button type="button" id="btnAfter" aria-pressed="false">优化后</button>
-          </div>
           <button aria-label="表单设置">☷</button>
           <button aria-label="全屏">⛶</button>
           <button aria-label="关闭窗口">×</button>
